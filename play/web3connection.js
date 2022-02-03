@@ -280,7 +280,9 @@ async function onConnect() {
 
       let mintCost = parseInt(document.querySelector("#mintcost").value) * 10 ** 18;
 
-      await  new web3.eth.Contract(minterABI, '0x0594FEe490F57f4eD3BDDDA0C3372480Aea6aD96').methods.mint(mintAmount).send({from: accounts[0], gas: 3000000, value: mintCost});
+      let _gasPrice = await web3.eth.getGasPrice();
+
+      await  new web3.eth.Contract(minterABI, '0x0594FEe490F57f4eD3BDDDA0C3372480Aea6aD96').methods.mint(mintAmount).send({from: accounts[0], gasPrice: _gasPrice, gas: 3000000, value: mintCost});
 
       await refreshAccountData();
     }
