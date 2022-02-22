@@ -36,8 +36,8 @@ let generatorABI = [{"anonymous":false,"inputs":[{"indexed":true,"internalType":
 
 // Token URI
 async function  getTokenURI(tokenID){
-  let character = await new contractProvider.eth.Contract(minterABI, '0x0594FEe490F57f4eD3BDDDA0C3372480Aea6aD96').methods.getTokenComponents(tokenID).call();;
-  return await new contractProvider.eth.Contract(generatorABI, '0x83735866E761242dFcfaD61475AF025F6BEbCfE6').methods.tokenURI(tokenID, character, 10000).call();
+  return await new contractProvider.eth.Contract(minterABI, '0x0594FEe490F57f4eD3BDDDA0C3372480Aea6aD96').methods.getTokenComponents(tokenID).call();
+  //return await new contractProvider.eth.Contract(generatorABI, '0x83735866E761242dFcfaD61475AF025F6BEbCfE6').methods.tokenURI(tokenID, character, 10000).call();
 }
 
 /**
