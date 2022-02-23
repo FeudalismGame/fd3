@@ -146,7 +146,7 @@ async function fetchAccountData() {
     {
       console.log("Checking revealed token!");
       let traits = await new contractProvider.eth.Contract(minterABI, '0x46B1c44f79ab48a9Dc6fF0D98984e9Ca02D277BA').methods.getTokenComponents(userTokens[i]).call();
-      if(traits[0] == 0 && traits[1] == 0 && traits[2] == 0 && traits[3] == 0 && traits[4] == 0 && traits[5] == 0 && traits[6] == 0 && traits[7] == 0 && traits[8] == 0)  // => All traits 0 means still not defined.
+      if(traits[10] == 0)  // => Charisma = 0 means not revealed yet
       {
         isRevealed.push(false);
       }
@@ -188,9 +188,13 @@ async function fetchAccountData() {
         }
         else
         {
-          InventoryOutput = InventoryOutput + "<div class=\"container\" style=\"width: 288px; height: 526px; margin: 1rem; background-image: url('holder.png'); background-repeat:no-repeat;\"><br><br><img style=\"width: 212px; height: 212px;\" src=\"./unrevealed.png\" class=\"card-img-top\" alt=\"Unknown Citizen\"><div class=\"card-body\"><p class=\"card-text\">#" + userTokens[i] + "<br>Reveal to see its attributes.</div><br><div class=\"card-footer\"><button class=\"btn btn-warning\" ";
-          // If reveal is not enabled, render button as disabled
-          if(!revealEnabled)
+          InventoryOutput = InventoryOutput + "<div class=\"container\" style=\"width: 288px; height: 526px; margin: 1rem; background-image: url('holder.png'); background-repeat:no-repeat;\"><br><br><img style=\"width: 212px; height: 212px;\" src=\"./unrevealed.png\" class=\"card-img-top\" alt=\"Unknown Citizen\"><div class=\"card-body\"><p class=\"card-text\">#" + userTokens[i] + "<br>Reveal to see its attributes.</div><br><div class=\"card-footer\"><button class=\"btn btn-warning\" onclick=\"onReveal("+ userTokens[i] +")\" ";
+          
+          //State of VRF seed
+          let seed = await new contractProvider.eth.Contract(minterABI, '0x46B1c44f79ab48a9Dc6fF0D98984e9Ca02D277BA').methods.tokenSeeds(userTokens[i]).call();
+          
+          // If reveal is not enabled or seed phrase is not produced yet, render button as disabled
+          if(!revealEnabled || seed == 0)
           {
            InventoryOutput = InventoryOutput + "disabled";
           }
@@ -281,6 +285,68 @@ async function onConnect() {
   await refreshAccountData();
 }
 
+
+/**Reveal toke
+ * When clicked reved button
+ */
+
+async function onReveal(id)
+{
+  // Check user is on Polygon Network or Noy by ChainID
+  if(chainId == 137)
+  {
+    // Get a Web3 instance for the wallet
+    const web3 = new Web3(provider);
+
+    const accounts = await web3.eth.getAccounts();
+
+    let _gasPrice = await web3.eth.getGasPrice();
+
+    await  new web3.eth.Contract(minterABI, '0x46B1c44f79ab48a9Dc6fF0D98984e9Ca02D277BA').methods.revealToken(id).send({from: accounts[0], gasPrice: _gasPrice, gas: 3000000});
+
+    await refreshAccountData();
+  }
+  else
+  {
+    // Force user to switch to Polygon
+    try {
+      await ethereum.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: '0x89' }],
+      });
+
+      // Call Mint again
+      onMint();
+    } catch (switchError) {
+      // This error code indicates that the chain has not been added to MetaMask.
+      if (switchError.code === 4902) {
+        try {
+          await ethereum.request({
+            method: 'wallet_addEthereumChain',
+            params: [
+              {
+                chainId: '0x89',
+                chainName: 'Polygon Mainnet',
+                rpcUrls: ['https://polygon-rpc.com/'] ,
+                nativeCurrency: {
+                  name: 'POLYGON',
+                  symbol: 'MATIC', // 2-6 characters long
+                  decimals: 18
+                },
+              },
+            ],
+          });
+
+          // Call Mint again
+          onMint();
+        } catch (addError) {
+          // handle "add" error
+        }
+      }
+      // handle other "switch" errors
+    }
+  }
+}
 /**
  * Mint token when mint button pressed.
  */
