@@ -175,7 +175,7 @@ async function fetchAccountData() {
         {
          // If character is already revealed, group as roles and ask for staking. TO BE DONE!
          let tokenImage;
-         tokenURI(userTokens[i]).then(function(value) { tokenImage = value['image'].replace("data:image/svg+xml;base64,", "") });
+         await tokenURI(userTokens[i]).then(function(value) { tokenImage = value['image'].replace("data:image/svg+xml;base64,", "") });
          tokenImage = atob(tokenImage);
 
          InventoryOutput = InventoryOutput + "<div class=\"container\" style=\"width: 288px; height: 526px; margin: 1rem; background-image: url('holder.png'); background-repeat:no-repeat;\"><br><br>" + tokenImage + "<br> #" + userTokens[i] + "</div>";
