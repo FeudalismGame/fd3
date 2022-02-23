@@ -36,8 +36,8 @@ let generatorABI = [{"inputs":[{"internalType":"address","name":"_base64contract
 
 // Show Token Image
 async function  showTokenImage(tokenID){
-  let character =  await new contractProvider.eth.Contract(minterABI, '0x46B1c44f79ab48a9Dc6fF0D98984e9Ca02D277BA').methods.getTokenComponents(tokenID).call();
-  return await new contractProvider.eth.Contract(generatorABI, '0x9850f12E90ff866C087C8D625a97A195bdb53818').methods.drawSVG(character).call();
+  let tokenURI =  await new contractProvider.eth.Contract(minterABI, '0x46B1c44f79ab48a9Dc6fF0D98984e9Ca02D277BA').methods.tokenURI(tokenID).call();
+  return tokenURI;
 }
 
 /**
