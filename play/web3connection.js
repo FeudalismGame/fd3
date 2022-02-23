@@ -175,10 +175,16 @@ async function fetchAccountData() {
         {
          // If character is already revealed, group as roles and ask for staking. TO BE DONE!
          let tokenImage;
-         await tokenURI(userTokens[i]).then(function(value) { tokenImage = value['image'].replace("data:image/svg+xml;base64,", "") });
-         tokenImage = atob(tokenImage);
+         let tokenRole;
+         let tokenCharisma;
 
-         InventoryOutput = InventoryOutput + "<div class=\"container\" style=\"width: 288px; height: 526px; margin: 1rem; background-image: url('holder.png'); background-repeat:no-repeat;\"><br><br>" + tokenImage + "<br> #" + userTokens[i] + "</div>";
+         await tokenURI(userTokens[i]).then(function(value) { tokenImage = value['image'].replace("data:image/svg+xml;base64,", ""); tokenRole = value['attributes'][11]['value']; tokenCharisma =  value['attributes'][9]['value']; });
+         tokenImage = atob(tokenImage);
+         
+
+        
+
+         InventoryOutput = InventoryOutput + "<div class=\"container\" style=\"width: 288px; height: 526px; margin: 1rem; background-image: url('holder.png'); background-repeat:no-repeat;\"><div style=\"width: 250px; height: 250px;\"><br><br> Citizen #" + userTokens[i] + "<br>" + tokenImage + "</div><br><br> Role: " + tokenRole + "<br><br> Charisma: " + tokenCharisma + "<br><br><button class=\"btn btn-success\" disabled>Stake</button></div>";
         }
         else
         {
